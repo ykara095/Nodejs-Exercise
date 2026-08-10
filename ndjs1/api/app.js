@@ -4,6 +4,10 @@ if (process.env.NODE_ENV != "production") {
 
 
 var createError = require('http-errors');
+var Database = require('./db/Database');
+const db = new Database();
+db.connect({ CONNECTION_STRING: process.env.CONNECTION_STRING })
+  .catch(err => console.error("Veritabanı bağlantı hatası:", err));
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
