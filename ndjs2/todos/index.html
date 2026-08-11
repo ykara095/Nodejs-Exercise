@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    ```
+    <main class="container">
+
+        <header class="header">
+            <div>
+                <p class="eyebrow">PRODUCTIVITY</p>
+                <h1>My Tasks</h1>
+                <p class="subtitle">Günlük görevlerini kolayca takip et.</p>
+            </div>
+
+            <div class="task-count">
+                <span id="taskCount">0</span>
+                <small>Görev</small>
+            </div>
+        </header>
+
+        <section class="add-task">
+            <input type="text" id="taskInput" placeholder="Yeni bir görev yaz..." autocomplete="off">
+
+            <button id="addTaskBtn">
+                Ekle
+            </button>
+        </section>
+
+        <nav class="filters">
+            <button class="filter active" data-filter="all">
+                Tümü
+            </button>
+
+            <button class="filter" data-filter="active">
+                Devam Eden
+            </button>
+
+            <button class="filter" data-filter="completed">
+                Tamamlanan
+            </button>
+        </nav>
+
+        <section class="task-list" id="taskList">
+
+            <!--
+            JavaScript ile görevler buraya eklenecek.
+
+            Örnek görev:
+
+            <div class="task">
+                <button class="complete-btn">✓</button>
+
+                <span class="task-title">
+                    Node.js çalış
+                </span>
+
+                <button class="delete-btn">×</button>
+            </div>
+        -->
+
+        </section>
+
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">✓</div>
+            <h2>Henüz görev yok</h2>
+            <p>Yukarıdaki alandan yeni bir görev ekleyebilirsin.</p>
+        </div>
+
+        <footer>
+            <span>Task Manager</span>
+            <span>Node.js Project</span>
+        </footer>
+
+    </main>
+
+    <script src="app.js"></script>
+    ```
+
+</body>
+
+</html>
