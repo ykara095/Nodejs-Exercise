@@ -34,11 +34,12 @@ class Users extends Database {
     }
 
     async add(email, passwords) {
-        const query = "INSERT INTO users (email,passwords) VALUES ($1,$2)";
+        // RETURNING id sayesinde PostgreSQL eklediği verinin ID'sini bize geri dönecek
+        const query = "INSERT INTO users (email,passwords) VALUES ($1,$2) RETURNING id";
 
         try {
             const result = await this.pool.query(query, [email, passwords]);
-            return result.rows;
+            return result.rows[0]; // Bize { id: 5 } şeklinde objeyi döner
         }
 
         catch (error) {
@@ -48,5 +49,4 @@ class Users extends Database {
     }
 }
 
-module.exports = Users;
-
+module.exports = new Users();

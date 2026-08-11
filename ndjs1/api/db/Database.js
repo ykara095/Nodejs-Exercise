@@ -1,31 +1,37 @@
 const { Pool } = require('pg');
 
-let instance = null;
+let sharedPool = null; // Havuzu (pool) modül seviyesinde tutuyoruz
+
 class Database {
 
     constructor() {
-        if (!instance) {
-            this.pool = null; //yeni olusturulan database = null;
-            instance = this;
-        }
+        // Constructor içinde return kullanmıyoruz, aksi takdirde kalıtım (inheritance) bozulur!
+    }
 
-        return instance;
+    // this.pool çağrıldığında her zaman sharedPool'u döndürür
+    get pool() {
+        return sharedPool;
+    }
+
+    // this.pool = ... denildiğinde sharedPool'u günceller
+    set pool(val) {
+        sharedPool = val;
     }
 
     async connect(options) {
-        if (this.pool) return this.pool;
+        if (sharedPool) return sharedPool;
 
-        this.pool = new Pool({
+        sharedPool = new Pool({
             connectionString: options.CONNECTION_STRING
         })
 
-        const client = await this.pool.connect();
+        const client = await sharedPool.connect();
         client.release();
 
         console.log('PostgreSQL baglantisi basariyla kuruldu.');
-        return this.pool;
+        return sharedPool;
     }
 
 }
 
-module.exports = Database
+module.exports = Database;
