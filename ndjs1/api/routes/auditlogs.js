@@ -3,7 +3,7 @@ const Response = require("../lib/response");
 const AuditLogs = require("../db/AuditLogs");
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res) => {
     try {
         // GET isteklerinde veri req.body yerine req.query'den alınır.
         let query = req.query;
@@ -23,14 +23,5 @@ router.get("/", async (req, res, next) => {
         res.status(500).json(Response.errorResponse(error));
     }
 });
-
-router.post("/add", async (req, res, next) => {
-
-    try {
-
-    } catch (error) {
-
-    }
-})
 
 module.exports = router;
