@@ -47,6 +47,61 @@ class Users extends Database {
             throw error;
         }
     }
+
+    /*async updateEmail(id, email) {
+        const query = "UPDATE users SET email = $2 WHERE id = $1";
+        try {
+            const result = await this.pool.query(query, [id, email]);
+            return result.rowCount;
+        }
+        catch (error) {
+            console.error("verileri guncellerken hata olustu", error);
+            throw error;
+        }
+    }*/
+
+    async update(id, updates) {
+        let setQuery = [];
+        let values = [];
+        let count = 1;
+        if (updates.email) {
+            setQuery.push(`email = $${count}`);
+            values.push(updates.email)
+            count++;
+        }
+        if (updates.passwords) {
+            setQuery.push(`passwords = $${count}`);
+            values.push(updates.passwords);
+            count++;
+        }
+        if (setQuery.length === 0) return;
+        values.push(id);
+
+        const query = "UPDATE users SET " + setQuery.join(", ") + " WHERE id =$" + `${count}`;
+
+        try {
+            const result = await this.pool.query(query, values);
+            return result.rowCount;
+        }
+
+        catch (error) {
+            console.error("verileri guncellerken hata olustu", error);
+            throw error;
+        }
+
+    }
+
+    async delete(id) {
+        const query = "DELETE FROM users WHERE id=$1";
+
+        try {
+            const result = await this.pool.query(query, [id]);
+            return result.rowCount;
+        } catch (error) {
+            console.error("verileri silerken hata olustu", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = new Users();

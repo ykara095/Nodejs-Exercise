@@ -14,5 +14,14 @@ module.exports = {
         INTERNAL_SERVER_ERROR: 500,
         BAD_GATEWAY: 502,
         SERVICE_UNAVAILABLE: 503
+    },
+
+    LOG_LEVELS: {
+        "INFO": "INFO",
+        "WARN": "WARN",
+        "ERROR": "ERROR",
+        "DEBUG": "DEBUG",
+        "VERBOSE": "VERBOSE",
+        "HTTP": "HTTP"
     }
 }
