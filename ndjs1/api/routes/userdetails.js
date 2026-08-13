@@ -37,12 +37,12 @@ router.post('/add', async (req, res, next) => {
     let body = req.body;
     try {
         if (!body.user_id) {
-            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error", "user_id field must be filled");
+            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("USER_ID_REQUIRED"));
         }
 
 
         if (!body.first_name) {
-            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error", "first_name field must be filled");
+            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("FIRST_NAME_REQUIRED"));
         }
 
 
@@ -70,7 +70,7 @@ router.put('/update', async (req, res, next) => {
         let updates = {};
 
         if (!body.user_id) {
-            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error", "user_id field must be filled");
+            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("USER_ID_REQUIRED"));
         }
 
         if (body.first_name) updates.first_name = body.first_name;
@@ -102,7 +102,7 @@ router.delete('/delete', async (req, res, next) => {
 
     try {
         if (!body.user_id) {
-            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "validation error", "id field must be filled");
+            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("ID_REQUIRED"));
         }
         await UserDetails.delete(body.user_id);
         

@@ -1,0 +1,11 @@
+{
+    "VALIDATION_ERROR": "Doğrulama hatası",
+    "EMAIL_REQUIRED": "E-posta alanı doldurulmalıdır",
+    "PASSWORD_REQUIRED": "Şifre alanı doldurulmalıdır",
+    "ID_REQUIRED": "ID alanı doldurulmalıdır",
+    "USER_ID_REQUIRED": "Kullanıcı ID alanı doldurulmalıdır",
+    "FIRST_NAME_REQUIRED": "İsim alanı doldurulmalıdır",
+    "USER_NOT_FOUND": "Kullanıcı bulunamadı",
+    "INVALID_CREDENTIALS": "Geçersiz kimlik bilgileri",
+    "REFRESH_TOKEN_REQUIRED": "Yenileme jetonu (refresh token) alanı doldurulmalıdır"
+}

@@ -5,10 +5,14 @@ const Response = require("../lib/response");
 const CustomError = require("../lib/Error");
 const Enum = require("../config/Enum");
 const AuditLogs = require('../lib/AuditLogs');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
+const bcrypt = require('bcrypt');
+const auth = require('../lib/auth')();
 
 
 
-router.get('/', async (req, res, next) => {
+router.get('/', auth.authenticate(), async (req, res, next) => {
 
   try {
     let users = await Users.getAll();
@@ -29,13 +33,15 @@ router.post('/add', async (req, res, next) => {
   let body = req.body;
   try {
     if (!body.email) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "validation error", "email field must be filled");
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("EMAIL_REQUIRED"));
     }
     if (!body.passwords) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "validation error", "passwords field must be filled");
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("PASSWORD_REQUIRED"));
     }
 
-    let result = await Users.add(body.email, body.passwords);
+    let hashedPasswords = await bcrypt.hash(body.passwords, 10);
+
+    let result = await Users.add(body.email, hashedPasswords);
 
     // Yeni kullanici eklendiginde, bunu yapan kisiyi ve islemi logluyoruz
     AuditLogs.info(req.user?.email, "Users", "Add", "Added");
@@ -51,20 +57,20 @@ router.post('/add', async (req, res, next) => {
   }
 })
 
-router.put('/update', async (req, res, next) => {
+router.put('/update', auth.authenticate(), async (req, res, next) => {
   let body = req.body;
   try {
     let updates = {}
 
     if (!body.id) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "validation error", "id field must be filled");
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("ID_REQUIRED"));
     }
 
     if (body.email) updates.email = body.email;
     if (body.passwords) updates.passwords = body.passwords;
 
     await Users.update(body.id, updates);
-    
+
     // Guncelleme islemi bittiginde log atiyoruz
     AuditLogs.info(req.user?.email, "Users", "Update", "User updated");
 
@@ -79,15 +85,15 @@ router.put('/update', async (req, res, next) => {
   }
 })
 
-router.delete('/delete', async (req, res, next) => {
+router.delete('/delete', auth.authenticate(), auth.checkRoles("ADMIN"), async (req, res, next) => {
   let body = req.body;
 
   try {
     if (!body.id) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "validation error", "id field must be filled");
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("ID_REQUIRED"));
     }
     await Users.delete(body.id);
-    
+
     // Silme islemini gerceklestiren kisiyi logluyoruz
     AuditLogs.info(req.user?.email, "Users", "Delete", "User deleted");
 
@@ -101,6 +107,64 @@ router.delete('/delete', async (req, res, next) => {
 
   }
 
+
+})
+
+router.post('/login', async (req, res, next) => {
+  let body = req.body;
+
+  try {
+
+    if (!body.email) {
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("EMAIL_REQUIRED"));
+    }
+
+    if (!body.passwords) {
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("PASSWORD_REQUIRED"));
+    }
+    let results = await Users.getByEmail(body.email);
+
+    if (!results) {
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("USER_NOT_FOUND"));
+    } else {
+      let isPasswordsCorrect = await bcrypt.compare(body.passwords, results.passwords)
+      if (!isPasswordsCorrect) {
+        throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("INVALID_CREDENTIALS"));
+
+      } else {
+        let accessToken = jwt.sign({ id: results.id }, config.JWT.SECRET, { expiresIn: '1h' });
+        let refreshToken = jwt.sign({ id: results.id }, config.JWT.SECRET, { expiresIn: '7d' })
+        res.json(Response.successResponse({ accessToken: accessToken, refreshtoken: refreshToken }));
+      }
+    }
+
+  } catch (error) {
+    let statusCode = (error instanceof CustomError) ? error.code : Enum.HTTP_CODES.INTERNAL_SERVER_ERROR;
+    res.status(statusCode).json(Response.errorResponse(error, statusCode));
+  }
+})
+
+router.post('/refresh', async (req, res, next) => {
+  let body = req.body;
+
+  try {
+
+    if (!body.refreshtoken) {
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, req.__("VALIDATION_ERROR"), req.__("REFRESH_TOKEN_REQUIRED"));
+    }
+
+    let payload = jwt.verify(body.refreshtoken, config.JWT.SECRET);
+
+    let newAccessToken = jwt.sign({
+      id: payload.id
+    }, config.JWT.SECRET, { expiresIn: '1h' })
+
+    res.json(Response.successResponse({ accessToken: newAccessToken }));
+
+  } catch (error) {
+    let statusCode = (error instanceof CustomError) ? error.code : Enum.HTTP_CODES.INTERNAL_SERVER_ERROR;
+    res.status(statusCode).json(Response.errorResponse(error, statusCode));
+  }
 
 })
 

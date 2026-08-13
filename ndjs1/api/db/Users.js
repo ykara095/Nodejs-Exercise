@@ -43,22 +43,22 @@ class Users extends Database {
         }
 
         catch (error) {
-            console.error("verileri cekerken hata olustu", error);
+            console.error("verileri eklerken hata olustu", error);
             throw error;
         }
     }
 
-    /*async updateEmail(id, email) {
-        const query = "UPDATE users SET email = $2 WHERE id = $1";
+    async getByEmail(email) {
+        const query = "SELECT * FROM users WHERE email = $1";
+
         try {
-            const result = await this.pool.query(query, [id, email]);
-            return result.rowCount;
-        }
-        catch (error) {
-            console.error("verileri guncellerken hata olustu", error);
+            const result = await this.pool.query(query, [email]);
+            return result.rows[0];
+        } catch (error) {
+            console.error("verileri cekerken hata olustu", error);
             throw error;
         }
-    }*/
+    }
 
     async update(id, updates) {
         let setQuery = [];

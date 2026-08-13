@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE Test Ekranı</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        #messages { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; height: 300px; overflow-y: auto; }
+        .mesaj { padding: 8px; border-bottom: 1px solid #eee; }
+        .mesaj:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Canlı Saat (Server-Sent Events)</h1>
+    <p>Sunucudan gelen veriler aşağıda listelenecek:</p>
+    
+    <div id="messages">
+        <!-- Gelen veriler buraya eklenecek -->
+    </div>
+
+    <script>
+        // Sunucuya bağlanıyoruz (Senin oluşturduğun api rotası)
+        const source = new EventSource('/api/events');
+        
+        const mesajKutusu = document.getElementById('messages');
+
+        // Sunucudan her mesaj (data) geldiğinde bu çalışır
+        source.onmessage = function(event) {
+            const yeniDiv = document.createElement('div');
+            yeniDiv.className = 'mesaj';
+            yeniDiv.innerText = "Gelen Veri: " + event.data; // event.data senin res.write ile gönderdiğin kısımdır
+            
+            mesajKutusu.appendChild(yeniDiv);
+            
+            // Otomatik olarak en aşağı kaydır
+            mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
+        };
+
+        // Hata veya bağlantı kopma durumunu dinleme
+        source.onerror = function(error) {
+            console.error("SSE Bağlantı Hatası:", error);
+            const hataDiv = document.createElement('div');
+            hataDiv.className = 'mesaj';
+            hataDiv.style.color = "red";
+            hataDiv.innerText = "Bağlantı koptu veya hata oluştu!";
+            mesajKutusu.appendChild(hataDiv);
+        };
+    </script>
+</body>
+</html>

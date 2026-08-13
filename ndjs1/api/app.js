@@ -12,6 +12,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var i18n = require('./lib/i18n');
+
+var auth = require('./lib/auth')();
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -34,6 +37,8 @@ app.use((req, res, next) => {
   next()
 })
 
+app.use(auth.initialize());
+app.use(i18n.init);
 app.use('/api', require('./routes/index'));
 
 

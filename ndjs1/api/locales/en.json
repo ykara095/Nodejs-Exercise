@@ -1,0 +1,11 @@
+{
+    "VALIDATION_ERROR": "Validation error",
+    "EMAIL_REQUIRED": "Email field must be filled",
+    "PASSWORD_REQUIRED": "Passwords field must be filled",
+    "ID_REQUIRED": "ID field must be filled",
+    "USER_ID_REQUIRED": "User ID field must be filled",
+    "FIRST_NAME_REQUIRED": "First name field must be filled",
+    "USER_NOT_FOUND": "User not found",
+    "INVALID_CREDENTIALS": "Invalid credentials",
+    "REFRESH_TOKEN_REQUIRED": "Refresh token field must be filled"
+}
